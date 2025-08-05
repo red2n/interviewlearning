@@ -1,0 +1,63 @@
+# Intellij
+.idea/*
+!.idea/copyright
+.idea/copyright/*
+!.idea/copyright/Agilysys.xml
+!.idea/copyright/profiles_settings.xml
+!.idea/runConfigurations/
+.idea/runConfigurations/*
+!.idea/runConfigurations/_template__of_mocha_javascript_test_runner.xml
+!.idea/runConfigurations/_template__of_Mocha.xml
+*.iml
+.classpath
+.factorypath
+.project
+
+# VSCode
+.vscode/
+
+# Node
+node_modules/
+dist/
+
+# MS temp
+~$*
+
+# Vim backups
+*~
+
+# OS
+.DS_Store
+
+# Code coverage
+.nyc_output/
+coverage/
+lcov.info
+
+# Logs
+lerna-debug.log
+isolate-*.log
+out/
+
+# Python (mkdocs)
+*.pyc
+__pycache__/
+
+# Draw.io backups
+.$*
+*.bkp
+*.dtmp
+
+# Mkdocs build output
+mkdocs/site/
+mkdocs/docs/coverages/
+
+# Local config
+application-local.yml
+
+# dotenv environment variables file
+.env
+local/
+
+# simulator log dir
+logs/
