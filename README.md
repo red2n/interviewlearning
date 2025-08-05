@@ -2,6 +2,7 @@
 
 [![CI/CD Pipeline](https://github.com/red2n/interviewlearning/workflows/CI/CD%20Pipeline/badge.svg)](https://github.com/red2n/interviewlearning/actions)
 [![Build Status](https://github.com/red2n/interviewlearning/workflows/Build%20Status/badge.svg)](https://github.com/red2n/interviewlearning/actions)
+[![Open in VS Code](https://img.shields.io/badge/Open%20in-VS%20Code-blue?style=flat-square&logo=visual-studio-code)](https://vscode.dev/github/red2n/interviewlearning)
 
 A comprehensive Node.js/TypeScript application demonstrating Redis Bloom filters with auto-purging cache capabilities, web API interface, and server deployment automation.
 
