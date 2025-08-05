@@ -1,5 +1,8 @@
 # Redis Bloom Filter Application
 
+[![CI/CD Pipeline](https://github.com/red2n/interviewlearning/workflows/CI/CD%20Pipeline/badge.svg)](https://github.com/red2n/interviewlearning/actions)
+[![Build Status](https://github.com/red2n/interviewlearning/workflows/Build%20Status/badge.svg)](https://github.com/red2n/interviewlearning/actions)
+
 A comprehensive Node.js/TypeScript application demonstrating Redis Bloom filters with auto-purging cache capabilities, web API interface, and server deployment automation.
 
 ## 🚀 Features

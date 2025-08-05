@@ -40,6 +40,12 @@ isolate-*.log
 out/
 *.gz
 
+# CI/CD artifacts
+.nyc_output/
+coverage/
+*.tar.gz
+build-artifacts/
+
 # Python (mkdocs)
 *.pyc
 __pycache__/

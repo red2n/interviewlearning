@@ -7,7 +7,8 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "server": "node dist/simple-web-server.js",
+    "server": "node dist/web-server.js",
+    "test": "npm run build && echo 'Build successful - tests would go here'",
     "dev": "nodemon --watch src --exec \"npm run build && npm run start\"",
     "clean": "npx -y rimraf ./dist ./node_modules ./coverage"
   },
