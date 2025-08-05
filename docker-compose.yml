@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  redis-stack:
+    image: redis/redis-stack:latest
+    container_name: redis-bloom-stack
+    ports:
+      - "6379:6379"
+      - "8001:8001"
+    volumes:
+      - redis-data:/data
+      - ./config/redis-cache.conf:/usr/local/etc/redis/redis.conf
+    environment:
+      - REDIS_ARGS=--loadmodule /opt/redis-stack/lib/redisbloom.so
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - redis-bloom-network
+
+  redis-bloom-app:
+    build: .
+    container_name: redis-bloom-app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - REDIS_URL=redis://redis-stack:6379
+      - LOG_LEVEL=info
+      - LOG_PRETTY=false
+    depends_on:
+      redis-stack:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - redis-bloom-network
+
+volumes:
+  redis-data:
+
+networks:
+  redis-bloom-network:
+    driver: bridge
