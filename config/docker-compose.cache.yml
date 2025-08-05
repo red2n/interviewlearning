@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  # Redis Stack with cache purging configuration
+  redis-cache:
+    image: redis/redis-stack-server:latest
+    container_name: redis-cache-purging
+    ports:
+      - "6379:6379"
+      - "8001:8001"  # RedisInsight web UI
+    volumes:
+      - ./redis-cache.conf:/usr/local/etc/redis/redis.conf
+      - redis-data:/data
+    command: >
+      redis-server
+      --maxmemory 512mb
+      --maxmemory-policy allkeys-lru
+      --hz 100
+      --save ""
+      --appendonly no
+    environment:
+      - REDIS_ARGS="--maxmemory 512mb --maxmemory-policy allkeys-lru"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Alternative: Pure Redis with custom config
+  redis-pure:
+    image: redis:7-alpine
+    container_name: redis-pure-cache
+    ports:
+      - "6380:6379"  # Different port to avoid conflict
+    volumes:
+      - ./redis-cache.conf:/usr/local/etc/redis/redis.conf
+      - redis-pure-data:/data
+    command: redis-server /usr/local/etc/redis/redis.conf
+    restart: unless-stopped
+    profiles:
+      - pure-redis  # Use docker-compose --profile pure-redis up
+
+  # Redis Sentinel for high availability (optional)
+  redis-sentinel:
+    image: redis:7-alpine
+    container_name: redis-sentinel
+    ports:
+      - "26379:26379"
+    volumes:
+      - ./sentinel.conf:/usr/local/etc/redis/sentinel.conf
+    command: redis-sentinel /usr/local/etc/redis/sentinel.conf
+    depends_on:
+      - redis-cache
+    profiles:
+      - ha  # Use docker-compose --profile ha up
+    restart: unless-stopped
+
+  # Cache monitoring and cleanup service
+  cache-monitor:
+    build:
+      context: .
+      dockerfile: Dockerfile.monitor
+    container_name: cache-monitor
+    depends_on:
+      - redis-cache
+    environment:
+      - REDIS_URL=redis://redis-cache:6379
+      - CLEANUP_INTERVAL=60000  # 1 minute
+      - LOG_LEVEL=info
+    restart: unless-stopped
+    profiles:
+      - monitoring
+
+volumes:
+  redis-data:
+    driver: local
+  redis-pure-data:
+    driver: local
+
+networks:
+  default:
+    name: redis-cache-network

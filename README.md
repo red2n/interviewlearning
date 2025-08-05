@@ -1,55 +1,356 @@
-# Redis Bloom Filter Project
+# Redis Bloom Filter Application
 
-This project demonstrates Redis Bloom filter operations using Node.js and TypeScript with a comprehensive setup script that handles multiple installation approaches.
+A comprehensive Node.js/TypeScript application demonstrating Redis Bloom filters with auto-purging cache capabilities, web API interface, and server deployment automation.
 
-## 📋 Prerequisites
+## 🚀 Features
 
-### Minimum Requirements
-- **Node.js** (v14 or higher)
-- **Linux/Ubuntu** system
-- **sudo** privileges
-- **Internet connection**
+- **Redis Bloom Filters**: Create, add items, and check membership with configurable error rates
+- **Cache Management**: TTL-based caching with multiple purging strategies
+- **Web API**: RESTful endpoints for all operations with interactive web interface
+- **Auto-Purging**: Memory-based eviction, TTL expiration, and scheduled cleanup
+- **Real-time Monitoring**: Cache statistics and health monitoring
+- **Server Deployment**: Automated deployment scripts for production setup
+- **Comprehensive Documentation**: Detailed guides for setup, usage, and troubleshooting
 
-### Optional (will be auto-installed)
-- **Docker** (recommended - will be installed automatically)
-- **Redis** (will be installed if Docker approach fails)
-- **Build tools** (installed automatically when needed)
+## 📁 Project Structure
 
-## 🚀 Quick Start (Automated Setup)
-
-### Step 1: Clone and Install Dependencies
-```bash
-# If you haven't already cloned the repository
-git clone <your-repo-url>
-cd learning
-
-# Install Node.js dependencies
-npm install
+```
+redis-bloom-app/
+├── src/                           # TypeScript source code
+│   ├── index.ts                   # Main Bloom filter demo
+│   ├── web-server.ts              # Express web server
+│   ├── advanced-cache-manager.ts  # Cache management class
+│   └── types/
+│       └── redis.d.ts             # Redis type definitions
+├── scripts/                       # Shell scripts
+│   ├── setup-redis-bloom.sh       # Redis setup with multiple fallbacks
+│   ├── monitor-cache.sh           # Real-time cache monitoring
+│   ├── deploy-to-server.sh        # Comprehensive deployment script
+│   ├── server-setup-deploy.sh     # Simple deployment with server setup
+│   └── simple-deploy.sh           # Basic file transfer deployment
+├── config/                        # Configuration files
+│   ├── redis-cache.conf           # Redis server configuration
+│   └── docker-compose.cache.yml   # Docker Compose for Redis Stack
+├── docs/                          # Documentation
+│   ├── DIAGNOSTICS.md             # Troubleshooting guide
+│   ├── CACHE-PURGING-GUIDE.md     # Cache management documentation
+│   └── DEPLOYMENT-GUIDE.md        # Server deployment guide
+├── dist/                          # Compiled JavaScript (generated)
+├── package.json                   # Node.js dependencies and scripts
+├── tsconfig.json                  # TypeScript configuration
+└── README.md                      # This file
 ```
 
-### Step 2: Run Comprehensive Setup Script
-```bash
-# Make the script executable (if not already)
-chmod +x setup-redis-bloom.sh
+## 🛠️ Quick Start
 
-# Run the comprehensive setup script
-./setup-redis-bloom.sh
+### Prerequisites
+
+- **Node.js** 18+ and npm
+- **Docker** (recommended) or Redis Server
+- **TypeScript** (installed via npm)
+
+### Local Setup
+
+1. **Install Dependencies**
+   ```bash
+   npm install
+   ```
+
+2. **Setup Redis Stack**
+   ```bash
+   chmod +x scripts/setup-redis-bloom.sh
+   ./scripts/setup-redis-bloom.sh
+   ```
+
+3. **Build and Run**
+   ```bash
+   npm run build
+   npm start                    # Run Bloom filter demo
+   npm run server              # Start web server
+   ```
+
+4. **Test the Application**
+   ```bash
+   # Health check
+   curl http://localhost:3000/health
+
+   # Create demo bloom filter
+   curl -X POST http://localhost:3000/api/demo/bloom
+
+   # Open web interface
+   open http://localhost:3000
+   ```
+
+## 🌐 Web API
+
+### Available Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/` | Interactive web interface |
+| `GET` | `/health` | Health check and status |
+| `POST` | `/api/demo/bloom` | Create demo bloom filter |
+| `POST` | `/api/bloom/create` | Create new bloom filter |
+| `POST` | `/api/bloom/:name/add` | Add items to bloom filter |
+| `POST` | `/api/bloom/:name/check` | Check items in bloom filter |
+| `GET` | `/api/cache/stats` | Get cache statistics |
+| `POST` | `/api/cache/set` | Set cache entry with TTL |
+| `GET` | `/api/cache/:key` | Get cache entry |
+| `DELETE` | `/api/cache/:pattern` | Clean cache by pattern |
+
+### API Examples
+
+```bash
+# Create bloom filter with TTL
+curl -X POST -H "Content-Type: application/json"
+  -d '{"name":"search","errorRate":0.01,"capacity":1000,"ttl":3600}'
+  http://localhost:3000/api/bloom/create
+
+# Add items
+curl -X POST -H "Content-Type: application/json"
+  -d '{"items":["redis","bloom","filter"]}'
+  http://localhost:3000/api/bloom/search/add
+
+# Check items
+curl -X POST -H "Content-Type: application/json"
+  -d '{"items":["redis","mysql"]}'
+  http://localhost:3000/api/bloom/search/check
+
+# Set cache with 5-minute TTL
+curl -X POST -H "Content-Type: application/json"
+  -d '{"key":"user:123","value":{"name":"John"},"ttl":300}'
+  http://localhost:3000/api/cache/set
 ```
 
-The script will automatically:
-- ✅ Install Docker (if not present)
-- ✅ Set up Redis Stack with RedisBloom (recommended)
-- ✅ Fall back to manual Redis + RedisBloom compilation if needed
-- ✅ Test all connections and functionality
-- ✅ Provide detailed status and next steps
+## 🚢 Server Deployment
 
-### Step 3: Build and Run Your Application
+### Automated Deployment
+
+Deploy to your server with a single command:
+
 ```bash
-# Build the TypeScript code
+chmod +x scripts/server-setup-deploy.sh
+./scripts/server-setup-deploy.sh
+```
+
+This will:
+- Install Node.js, Docker, and Redis CLI on the server
+- Deploy application files
+- Setup Redis Stack with Docker
+- Install dependencies and build the project
+- Configure and test the setup
+
+### Manual Deployment Steps
+
+1. **Prepare for Deployment**
+   ```bash
+   npm run build
+   chmod +x scripts/simple-deploy.sh
+   ./scripts/simple-deploy.sh
+   ```
+
+2. **Connect to Server**
+   ```bash
+   ssh stayuser@stay-white.ad.local
+   cd redis-bloom-app
+   ```
+
+3. **Start Application**
+   ```bash
+   # Foreground (for testing)
+   PORT=3000 node dist/web-server.js
+
+   # Background (for production)
+   nohup PORT=3000 node dist/web-server.js > app.log 2>&1 &
+   ```
+
+4. **Test Remote Access**
+   ```bash
+   curl http://stay-white.ad.local:3000/health
+   ```
+
+## 📊 Monitoring and Management
+
+### Cache Monitoring
+
+```bash
+# Real-time statistics
+./scripts/monitor-cache.sh stats
+
+# Live monitoring for 2 minutes
+./scripts/monitor-cache.sh monitor 120
+
+# Auto-purging test
+./scripts/monitor-cache.sh test
+
+# Create demo data
+./scripts/monitor-cache.sh demo
+```
+
+### Application Monitoring
+
+```bash
+# View application logs
+tail -f app.log
+
+# Check process status
+ps aux | grep node
+
+# Monitor Redis
+redis-cli info memory
+docker logs redis-stack
+```
+
+## 🔧 Configuration
+
+### Environment Variables
+
+```bash
+PORT=3000                    # Application port
+REDIS_URL=redis://localhost:6379  # Redis connection URL
+NODE_ENV=production          # Environment mode
+LOG_LEVEL=info              # Logging level
+```
+
+### Redis Configuration
+
+The application supports multiple Redis configurations:
+
+- **Docker Redis Stack** (recommended): Includes RedisBloom, RedisJSON, RedisTimeSeries
+- **System Redis** with manual RedisBloom compilation
+- **Custom Redis** with configuration file
+
+See [`config/redis-cache.conf`](config/redis-cache.conf) for Redis server settings.
+
+## 📚 Documentation
+
+| Document | Description |
+|----------|-------------|
+| [DIAGNOSTICS.md](docs/DIAGNOSTICS.md) | Troubleshooting guide with common issues and solutions |
+| [CACHE-PURGING-GUIDE.md](docs/CACHE-PURGING-GUIDE.md) | Comprehensive cache management and auto-purging strategies |
+| [DEPLOYMENT-GUIDE.md](docs/DEPLOYMENT-GUIDE.md) | Detailed server deployment instructions |
+
+## 🔨 Scripts Reference
+
+| Script | Purpose | Usage |
+|--------|---------|-------|
+| [`setup-redis-bloom.sh`](scripts/setup-redis-bloom.sh) | Setup Redis with RedisBloom module | `./scripts/setup-redis-bloom.sh` |
+| [`monitor-cache.sh`](scripts/monitor-cache.sh) | Real-time cache monitoring and testing | `./scripts/monitor-cache.sh [command]` |
+| [`deploy-to-server.sh`](scripts/deploy-to-server.sh) | Comprehensive deployment with systemd/nginx | `./scripts/deploy-to-server.sh [server] [port] [user]` |
+| [`server-setup-deploy.sh`](scripts/server-setup-deploy.sh) | Simple deployment with server setup | `./scripts/server-setup-deploy.sh` |
+| [`simple-deploy.sh`](scripts/simple-deploy.sh) | Basic file transfer deployment | `./scripts/simple-deploy.sh` |
+
+### Script Examples
+
+```bash
+# Setup Redis locally
+./scripts/setup-redis-bloom.sh
+
+# Monitor cache for 5 minutes
+./scripts/monitor-cache.sh monitor 300
+
+# Deploy to custom server
+./scripts/deploy-to-server.sh myserver.com 8080 myuser
+
+# Simple deployment to default server
+./scripts/server-setup-deploy.sh
+```
+
+## 🧪 Testing
+
+### Local Testing
+
+```bash
+# Build and test basic functionality
 npm run build
-
-# Run the application
 npm start
+
+# Test web server
+PORT=3001 npm run server &
+curl http://localhost:3001/health
+curl -X POST http://localhost:3001/api/demo/bloom
+```
+
+### Production Testing
+
+```bash
+# Test after deployment
+curl http://your-server:3000/health
+curl -X POST http://your-server:3000/api/demo/bloom
+
+# Monitor performance
+./scripts/monitor-cache.sh stats
+```
+
+## 🔍 Troubleshooting
+
+### Common Issues
+
+1. **Redis Connection Error**
+   ```bash
+   # Check Redis status
+   redis-cli ping
+   docker ps | grep redis
+   ```
+
+2. **Port Already in Use**
+   ```bash
+   # Find process using port
+   netstat -tulpn | grep :3000
+   # Kill process
+   pkill -f "node dist/web-server.js"
+   ```
+
+3. **Build Errors**
+   ```bash
+   # Clean and rebuild
+   npm run clean
+   npm install
+   npm run build
+   ```
+
+4. **Permission Issues**
+   ```bash
+   # Make scripts executable
+   chmod +x scripts/*.sh
+   ```
+
+For detailed troubleshooting, see [docs/DIAGNOSTICS.md](docs/DIAGNOSTICS.md).
+
+## 🛡️ Production Considerations
+
+### Security
+
+- Configure firewall rules (port 3000)
+- Use environment variables for sensitive configuration
+- Enable Redis authentication if needed
+- Set up SSL/TLS for production traffic
+
+### Performance
+
+- Configure Redis memory limits and eviction policies
+- Monitor application logs and Redis metrics
+- Set up log rotation for application logs
+- Consider Redis clustering for high availability
+
+### Deployment
+
+- Use systemd service for automatic startup
+- Configure nginx reverse proxy for SSL termination
+- Set up monitoring and alerting
+- Implement backup strategies for Redis data
+
+## 📝 License
+
+This project is for educational and learning purposes.
+
+## 🤝 Contributing
+
+Feel free to submit issues, fork the repository, and create pull requests for any improvements.
+
+---
+
+**Happy coding with Redis Bloom Filters! 🎯**
 ```
 
 ## 📖 Detailed Setup Process

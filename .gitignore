@@ -38,6 +38,7 @@ lcov.info
 lerna-debug.log
 isolate-*.log
 out/
+*.gz
 
 # Python (mkdocs)
 *.pyc
